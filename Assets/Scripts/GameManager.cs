@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text countText;
     [SerializeField] TMP_Text autoClickText;
     [SerializeField] TMP_Text tapMultiplierText;
+
+    [SerializeField] GameObject clickButton;
     int count = 0;
     //how much point 1 tap generate
     int tapValue = 1;
@@ -21,6 +23,11 @@ public class GameManager : MonoBehaviour
     int tapMultiplierCost = 20;
     int tapMultiplierLevel = 1;
     
+    public float scale = 1.5f;
+    public float duration = 0.5f;
+    public Ease easeType = Ease.InOutCubic;
+    public bool isAnimating = false;
+
     void Start()
     {
         LoadGame();
@@ -60,6 +67,15 @@ public class GameManager : MonoBehaviour
     {
         count += tapValue;
         UpdateUI();
+        if (isAnimating)
+        return;
+        Vector2 original = transform.localScale;
+        Vector2 target = original * scale;
+        Sequence seq = DOTween.Sequence();
+        seq.Append(clickButton.transform.DOScale(target,duration).SetEase(easeType));
+        seq.Append(clickButton.transform.DOScale(original,duration).SetEase(easeType));
+        seq.OnComplete(()=>isAnimating = false);
+
     }
     void UpdateUI()
     {
